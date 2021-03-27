@@ -4,8 +4,7 @@ d3.json("samples.json").then((importedData) => {
 //   console.log(importedData.samples[0].otu_ids);
   var data = importedData;
 
-  // Slice the first 10 objects for plotting
-//   data = data.slice(0, 10);
+  // Slice the first 10 objects for plotting and reverse order due to Plotly's defaults
   var Values = data.samples[0].sample_values.map(row => row).slice(0, 10).reverse();
   var IDs = data.samples[0].otu_ids.map(row => `OTU ${row}`).slice(0, 10).reverse();
   var Labels = data.samples[0].otu_labels.map(row => row).slice(0, 10).reverse();
