@@ -7,7 +7,7 @@ function init() {
         initData.metadata.forEach((obs) => {
             IDArray.push(obs.id);
         });
-        console.log(IDArray);
+        // console.log(IDArray);
         
 
         IDArray.forEach((ID) => {
@@ -22,7 +22,7 @@ function init() {
     const firstID = IDArray[0];
     
     // // Initialise the Demographic Info and Plots with the first test subject ID
-    // buildPanel(firstID);
+    buildPanel(firstID);
     buildBar(firstID)
 
     });
@@ -36,7 +36,7 @@ init();
 // The data from the JSON file is arbitrarily named importedData as the argument
 function buildBar() {
     d3.json("samples.json").then((barData) => {
-        console.log(barData.samples[0].otu_ids);
+        // console.log(barData.samples[0].otu_ids);
   
 
         // Slice the first 10 objects for plotting and reverse order due to Plotly's defaults
@@ -54,7 +54,7 @@ function buildBar() {
             type: "bar",
             orientation: "h"
         };
-        console.log(trace1);
+        // console.log(trace1);
 
         // data
         var chartData = [trace1];
@@ -77,3 +77,31 @@ function buildBar() {
 
 
 }
+
+
+function buildPanel(id) {
+    d3.json("samples.json").then((buildData) => {
+
+        var infoArray = buildData.metadata.filter(x => x.id === id);
+        console.log(infoArray);
+
+        var infoObject = infoArray[0];
+        console.log(infoObject);
+
+        var metaPanel = d3.select("#sample-metadata");
+        metaPanel.html("");
+        Object.entries(infoObject).forEach(([key, value]) => {
+            metaPanel.append("h5").text(`${key}: ${value}`);
+        });
+
+    });
+
+}
+
+// Update New info and Plots by optionChanged function
+function optionChanged(newid) {
+    buildPanel(newid);
+    buildBar(newid);
+}
+
+
