@@ -34,17 +34,23 @@ init();
 
 // Use D3 fetch to read the JSON file
 // The data from the JSON file is arbitrarily named importedData as the argument
-function buildBar() {
+function buildBar(id) {
     d3.json("samples.json").then((barData) => {
         // console.log(barData.samples[0].otu_ids);
+
+        var infoArray = barData.samples.filter(x => x.id == id);
+        console.log(infoArray);
+
+        var infoObject = infoArray[0];
+        console.log(infoObject);
   
 
         // Slice the first 10 objects for plotting and reverse order due to Plotly's defaults
-        var Values = barData.samples[0].sample_values.map(row => row).slice(0, 10).reverse();
-        var IDs = barData.samples[0].otu_ids.map(row => `OTU ${row}`).slice(0, 10).reverse();
-        var Labels = barData.samples[0].otu_labels.map(row => row).slice(0, 10).reverse();
+        var Values = infoObject.sample_values.map(row => row).slice(0, 10).reverse();
+        var IDs = infoObject.otu_ids.map(row => `OTU ${row}`).slice(0, 10).reverse();
+        var Labels = infoObject.otu_labels.map(row => row).slice(0, 10).reverse();
 
-
+        
         // Trace1 for the Bacterial Data
         var trace1 = {
             x: Values,
@@ -82,7 +88,7 @@ function buildBar() {
 function buildPanel(id) {
     d3.json("samples.json").then((buildData) => {
 
-        var infoArray = buildData.metadata.filter(x => x.id === id);
+        var infoArray = buildData.metadata.filter(x => x.id == id);
         console.log(infoArray);
 
         var infoObject = infoArray[0];
