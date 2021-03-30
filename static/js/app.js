@@ -1,15 +1,19 @@
+// Initializing default info
 function init() {
     d3.json("samples.json").then((initData) => {
         // console.log(initData.metadata[0].id);        
         
+        // Create empty array to hold ID data
         var IDArray = [];
 
+        // Loop through metadata to grab IDs and push to IDArray
         initData.metadata.forEach((obs) => {
             IDArray.push(obs.id);
         });
         // console.log(IDArray);
         
 
+        // Loop through IDArray to link ID Nos. to HTML
         IDArray.forEach((ID) => {
             d3.select("#selDataset")
             .append("option")
@@ -18,12 +22,13 @@ function init() {
         });
 
 
-    // Initialise the Test Subject ID with the first test subject ID from the names list
+    // Create variable to hold first ID No. in IDArray
     const firstID = IDArray[0];
     
-    // // Initialise the Demographic Info and Plots with the first test subject ID
+    // Call functions to display info, Panel and Bar are ID specific
     buildPanel(firstID);
-    buildBar(firstID)
+    buildBar(firstID);
+    buildBubble()
 
     });
 
@@ -32,15 +37,17 @@ function init() {
 init();
 
 
-// Use D3 fetch to read the JSON file
-// The data from the JSON file is arbitrarily named importedData as the argument
+
+// Build function to display Bar Chart
 function buildBar(id) {
     d3.json("samples.json").then((barData) => {
         // console.log(barData.samples[0].otu_ids);
 
+        // Filter by id to match user selection with our JSON data
         var infoArray = barData.samples.filter(x => x.id == id);
         console.log(infoArray);
 
+        // Grabbing zeroth element of the filtered metadata
         var infoObject = infoArray[0];
         console.log(infoObject);
   
@@ -67,7 +74,7 @@ function buildBar(id) {
 
         // Apply the group bar mode to the layout
         var layout = {
-            title: "Biodiversity Results",
+            title: "Top 10 Bacteria Cultures Found",
             margin: {
             l: 100,
             r: 100,
@@ -85,15 +92,19 @@ function buildBar(id) {
 }
 
 
+// Build function to display Panel
 function buildPanel(id) {
     d3.json("samples.json").then((buildData) => {
 
+        // Filter by id to match user selection with our JSON data
         var infoArray = buildData.metadata.filter(x => x.id == id);
         console.log(infoArray);
 
+        // Grabbing zeroth element of the filtered metadata
         var infoObject = infoArray[0];
         console.log(infoObject);
 
+        // Looping through metadata to display in panel
         var metaPanel = d3.select("#sample-metadata");
         metaPanel.html("");
         Object.entries(infoObject).forEach(([key, value]) => {
@@ -111,3 +122,42 @@ function optionChanged(newid) {
 }
 
 
+
+
+// Build function to display Bubble Chart
+function buildBubble() {
+    d3.json("samples.json").then((bubbleData) => {
+        // console.log(bubbleData.samples[0].otu_ids);
+
+        // Create variables and reverse order due to Plotly's defaults
+        var Values = bubbleData.samples[0].sample_values.map(row => row).reverse();
+        var IDs = bubbleData.samples[0].otu_ids.map(row => row).reverse();
+        var Labels = bubbleData.samples[0].otu_labels.map(row => row).reverse();
+
+
+        // Trace1 for the Bacterial Data
+        var trace1 = {
+            x: IDs,
+            y: Values,
+            text: Labels,
+            mode: 'markers',
+            marker: {
+            color: IDs,
+            size: Values
+            }
+        };
+        
+        var data = [trace1];
+        
+        var layout = {
+            title: 'Bacteria Cultures Per Sample',
+            showlegend: false,
+            height: 600,
+            width: 1200
+        };
+        
+        Plotly.newPlot('bubble', data, layout);
+
+    });
+
+}
