@@ -28,7 +28,7 @@ function init() {
     // Call functions to display info, Panel and Bar are ID specific
     buildPanel(firstID);
     buildBar(firstID);
-    buildBubble()
+    buildBubble(firstID);
 
     });
 
@@ -119,20 +119,31 @@ function buildPanel(id) {
 function optionChanged(newid) {
     buildPanel(newid);
     buildBar(newid);
+    buildBubble(newid);
 }
 
 
 
 
 // Build function to display Bubble Chart
-function buildBubble() {
+function buildBubble(id) {
     d3.json("samples.json").then((bubbleData) => {
         // console.log(bubbleData.samples[0].otu_ids);
 
         // Create variables and reverse order due to Plotly's defaults
-        var Values = bubbleData.samples[0].sample_values.map(row => row).reverse();
-        var IDs = bubbleData.samples[0].otu_ids.map(row => row).reverse();
-        var Labels = bubbleData.samples[0].otu_labels.map(row => row).reverse();
+        // Filter by id to match user selection with our JSON data
+        var infoArray = bubbleData.samples.filter(x => x.id == id);
+        console.log(infoArray);
+
+        // Grabbing zeroth element of the filtered metadata
+        var infoObject = infoArray[0];
+        console.log(infoObject);
+  
+
+        // Slice the first 10 objects for plotting and reverse order due to Plotly's defaults
+        var Values = infoObject.sample_values.map(row => row).reverse();
+        var IDs = infoObject.otu_ids.map(row => row).reverse();
+        var Labels = infoObject.otu_labels.map(row => row).reverse();
 
 
         // Trace1 for the Bacterial Data
